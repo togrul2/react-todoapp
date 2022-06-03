@@ -9,7 +9,7 @@ export interface UserState {
     user: object,
     loading: boolean,
     error: {
-      message: string,
+      messages: any,
       status: number
     }
   };
@@ -19,7 +19,7 @@ export interface AuthData {
   user: object | null;
   loading: boolean;
   error: {
-    message: string,
+    messages: any,
     status: number
   } | null;
 }

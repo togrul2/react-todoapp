@@ -52,7 +52,7 @@ export default function Login() {
               <Button variant="primary" type="submit">
                 Login
               </Button>
-              {authError && <Alert className='mt-4' variant='danger'>{authError.message}</Alert>}
+              {authError && <Alert className='mt-4' variant='danger'>{authError.messages.detail}</Alert>}
             </Form>
         )}
       </Container>

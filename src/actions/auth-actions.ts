@@ -10,10 +10,10 @@ interface Credentials {
 }
 
 export interface Auth {
-  type: string,
-  loading?: boolean,
-  user?: object
-  error?: object
+  type: string;
+  loading?: boolean;
+  user?: object;
+  error?: any;
 }
 
 export function loginAction(credentials: Credentials) {
@@ -41,7 +41,7 @@ export function loginAction(credentials: Credentials) {
       dispatch(authActions.loginReducer({
         ...initialState,
         error: {
-          message: error.response.data.detail,
+          messages: error.response.data,
           status: error.response.status
         }
       }));
@@ -67,13 +67,18 @@ export function registerAction(data: {username: string, email: string, password:
           'Content-Type': 'application/json'
         }
       }
-      const {data: responseData} = await axios.post('http://localhost:8000/api/v2/register/', data, config);
-      dispatch(authActions.registerReducer({...initialState, user: responseData}));
+      await axios.post('http://localhost:8000/api/v2/register/', data, config);
+      const credentials = {
+        username: data.username,
+        password: data.password
+      }
+      const {data: loginResponseData} = await axios.post('http://localhost:8000/api/v2/login/', credentials, config);
+      dispatch(authActions.registerReducer({...initialState, user: loginResponseData}));
     } catch (error: AxiosError | any) {
       dispatch(authActions.registerReducer({
         ...initialState,
         error: {
-          message: error.response.data.detail,
+          messages: error.response.data,
           status: error.response.status
         }
       }))
