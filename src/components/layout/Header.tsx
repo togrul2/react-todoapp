@@ -2,13 +2,13 @@ import React from "react";
 import {Button, Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {AuthData, UserState} from "../../store/auth-slice";
+import {AuthData, UserLoginState} from "../../store/reducers/auth-reducers";
 import {AppDispatch} from "../../store/store";
 import {logoutAction} from "../../actions/auth-actions";
 
 
 export default function Header() {
-  const {user} = useSelector<UserState, AuthData>(state=>state.auth);
+  const {user} = useSelector<UserLoginState, AuthData>(state=>state.authLogin);
   const isAuthenticated = user !== null;
   const dispatch = useDispatch<AppDispatch>();
   const logoutHandler = () => {

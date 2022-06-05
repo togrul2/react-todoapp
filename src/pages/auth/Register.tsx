@@ -1,11 +1,11 @@
-import React, {useRef, useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
 import {Alert, Button, Container, Form} from "react-bootstrap";
 import {Link, useNavigate} from "react-router-dom";
 import {useInput} from "../../hooks/use-input";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {registerAction} from "../../actions/auth-actions";
-import {AuthData, UserState} from "../../store/auth-slice";
+import {AuthData, UserRegisterState} from '../../store/reducers/auth-reducers';
 import Loader from "../../components/ui/Loader";
 
 export default function Register() {
@@ -16,13 +16,7 @@ export default function Register() {
     valueChangeHandler: usernameChangeHandler,
     valueBlurHandler: usernameBlurHandler,
     reset: usernameReset
-  } = useInput(value => {
-    if (value.length === 0) {
-      return false;
-    } else if (value.length > 0 && value.length < 6) {
-      return false;
-    } else return !/\s+/.test(value);
-  });
+  } = useInput(value => !(value.length < 6 || /\s+/.test(value)));
 
   const {
     value: email,
@@ -30,9 +24,7 @@ export default function Register() {
     valueChangeHandler: emailChangeHandler,
     valueBlurHandler: emailBlurHandler,
     reset: emailReset
-  } = useInput(value => {
-    return value.length !== 0;
-  });
+  } = useInput(value => value.length !== 0);
 
   const {
     value: password,
@@ -40,14 +32,7 @@ export default function Register() {
     valueChangeHandler: passwordChangeHandler,
     valueBlurHandler: passwordBlurHandler,
     reset: passwordReset
-  } = useInput(value => {
-    if (value.length === 0) {
-      return false;
-    } else if (!/^[A-Z][\w-]{6,}$/.test(value)) {
-      return false;
-    }
-    return true;
-  });
+  } = useInput(value => !(value.length === 0 || !/^[A-Z][\w-]{6,}$/.test(value)));
 
   const {
     value: confirmPassword,
@@ -55,34 +40,31 @@ export default function Register() {
     valueChangeHandler: confirmPasswordChangeHandler,
     valueBlurHandler: confirmPasswordBlurHandler,
     reset: confirmPasswordReset
-  } = useInput(value => {
-    return value === password;
-  });
-  const {user, loading, error} = useSelector<UserState, AuthData>(state => state.auth);
+  } = useInput(value => value === password);
+
+  const {user, loading, error} = useSelector<UserRegisterState, AuthData>(state => state.authRegister);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const accept_input = useRef<HTMLInputElement>(null!);
 
-  if (user !== null) {
-    navigate('/tasks/');
-  }
+  useEffect(() => {
+    if (user !== null) {
+      navigate('/tasks/')
+    }
+  }, [user]);
 
   const registerSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!usernameHasError && !emailHasError && !passwordHasError && !confirmPasswordHasError && accept_input.current.checkValidity()) {
-      setIsValidated(true);
-      const data = {username, email, password};
-      dispatch(registerAction(data)).then();
-      if (!error) {
-        navigate('/login/');
-        usernameReset();
-        emailReset();
-        passwordReset();
-        confirmPasswordReset();
-      }
-    } else {
-      setIsValidated(false);
+    const data = {username, email, password};
+    dispatch(registerAction(data)).then();
+    if (!error) {
+      navigate('/tasks/');
+      usernameReset();
+      emailReset();
+      passwordReset();
+      confirmPasswordReset();
     }
+    setIsValidated(true);
   };
 
   return (
@@ -95,6 +77,7 @@ export default function Register() {
                 <Form.Group className="mb-3" controlId="username">
                   <Form.Label>Username</Form.Label>
                   <Form.Control
+                      required
                       type="text"
                       placeholder="Enter username"
                       value={username}
@@ -109,6 +92,7 @@ export default function Register() {
                 <Form.Group className="mb-3" controlId="email">
                   <Form.Label>Email Address</Form.Label>
                   <Form.Control
+                      required
                       type="email"
                       placeholder="Enter email"
                       value={email}
@@ -123,6 +107,7 @@ export default function Register() {
                 <Form.Group className="mb-3" controlId="password">
                   <Form.Label>Password</Form.Label>
                   <Form.Control
+                      required
                       type='password'
                       placeholder='Enter a password'
                       value={password}
@@ -137,6 +122,7 @@ export default function Register() {
                 <Form.Group className="mb-3" controlId="confirm-password">
                   <Form.Label>Confirm Password</Form.Label>
                   <Form.Control
+                      required
                       type="password"
                       placeholder="Enter Password Again"
                       value={confirmPassword}
@@ -155,14 +141,14 @@ export default function Register() {
                       feedback='Must accept terms and conditions'
                       feedbackType="invalid"
                       ref={accept_input}
-                      isInvalid={accept_input.current && !accept_input.current.checkValidity()}
                       label={(
                           <span>I accept all <Link to='/rules'>rules</Link> and conditions</span>
                       )}/>
                 </Form.Group>
                 <Button variant="primary" type="submit">Sign up</Button>
               </Form>
-              {error && error.messages.keys.map((key: string) => (<Alert variant='danger'>{error.messages[key]}</Alert>))}
+              {error && error.messages.keys.map((key: string) => (
+                  <Alert variant='danger'>{error.messages[key]}</Alert>))}
             </Container>
         )}
       </React.Fragment>

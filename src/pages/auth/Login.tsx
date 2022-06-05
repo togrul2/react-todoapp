@@ -4,14 +4,14 @@ import {loginAction} from "../../actions/auth-actions";
 import {useDispatch, useSelector} from "react-redux";
 import {useNavigate} from "react-router-dom";
 import {AppDispatch} from '../../store/store';
-import {AuthData, UserState} from "../../store/auth-slice";
+import {AuthData, UserLoginState} from "../../store/reducers/auth-reducers";
 import Loader from "../../components/ui/Loader";
 
 export default function Login() {
   const username_input = useRef<HTMLInputElement>(null!);
   const password_input = useRef<HTMLInputElement>(null!);
   const remember_me_input = useRef<HTMLInputElement>(null!);
-  const {user, loading: authLoading, error: authError} = useSelector<UserState, AuthData>(state => state.auth);
+  const {user, loading: authLoading, error: authError} = useSelector<UserLoginState, AuthData>(state => state.authLogin);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
