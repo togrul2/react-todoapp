@@ -2,13 +2,13 @@ import React from "react";
 import {Button, Container, Nav, Navbar, NavDropdown} from "react-bootstrap";
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {AuthData, UserLoginState} from "../../store/reducers/auth-reducers";
+import {UserData, LoginReducerState} from "../../store/reducers/auth-reducers";
 import {AppDispatch} from "../../store/store";
 import {logoutAction} from "../../actions/auth-actions";
 
 
 export default function Header() {
-  const {user} = useSelector<UserLoginState, AuthData>(state=>state.authLogin);
+  const {user} = useSelector<LoginReducerState, LoginData>(state => state.authLogin);
   const isAuthenticated = user !== null;
   const dispatch = useDispatch<AppDispatch>();
   const logoutHandler = () => {
@@ -22,7 +22,7 @@ export default function Header() {
           <Navbar.Toggle aria-controls="responsive-navbar-nav"/>
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto">
-              {isAuthenticated && (<Link className='nav-link' to='/'>Tasks</Link>)}
+              {isAuthenticated && (<Link className='nav-link' to='/tasks'>Tasks</Link>)}
             </Nav>
             <Nav>
               {isAuthenticated ? (

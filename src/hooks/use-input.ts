@@ -18,7 +18,7 @@ const initialState: State = {
 
 type Reducer = (state: State, action: Action) => State;
 
-export function useInput(validator: (val: string) => boolean, trim=false) {
+export function useInput<E extends HTMLInputElement | HTMLSelectElement>(validator: (val: string) => boolean, trim=false) {
   const [inputState, inputDispatch] = useReducer<Reducer>((state, action) => {
     switch (action.type) {
       case 'INPUT':
@@ -41,7 +41,7 @@ export function useInput(validator: (val: string) => boolean, trim=false) {
   const valueIsValid = validator(inputState.value);
   const hasError = !valueIsValid && inputState.isTouched;
 
-  const valueChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const valueChangeHandler = (e: React.ChangeEvent<E>) => {
     if(trim)
       inputDispatch({type:'INPUT', value: e.target.value.trim()});
     else

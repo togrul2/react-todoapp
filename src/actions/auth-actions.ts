@@ -60,15 +60,15 @@ export function registerAction(data: { username: string, email: string, password
         password: data.password
       }
       const {data: loginResponseData} = await axios.post('http://localhost:8000/api/v2/login/', credentials, config);
-      dispatch({type: registerReducerType.success, user: loginResponseData});
-      dispatch({type: loginReducerType.success, user: loginResponseData});
+      dispatch({type: registerReducerType.success, payload: loginResponseData});
+      dispatch({type: loginReducerType.success, payload: loginResponseData});
       localStorage.setItem('user', JSON.stringify(loginResponseData));
     } catch (error) {
       const errorData = {
         messages: (<AxiosError>error).response?.data,
         status: (<AxiosError>error).response?.status
       };
-      dispatch({type: registerReducerType.error, error: errorData});
+      dispatch({type: registerReducerType.error, payload: errorData});
     }
   }
 }

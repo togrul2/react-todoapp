@@ -5,8 +5,8 @@ import {useInput} from "../../hooks/use-input";
 import {useDispatch, useSelector} from "react-redux";
 import {AppDispatch} from "../../store/store";
 import {registerAction} from "../../actions/auth-actions";
-import {AuthData, UserRegisterState} from '../../store/reducers/auth-reducers';
 import Loader from "../../components/ui/Loader";
+import {UserData, RegisterReducerState} from "../../types/auth";
 
 export default function Register() {
   const [isValidated, setIsValidated] = useState(false);
@@ -16,7 +16,7 @@ export default function Register() {
     valueChangeHandler: usernameChangeHandler,
     valueBlurHandler: usernameBlurHandler,
     reset: usernameReset
-  } = useInput(value => !(value.length < 6 || /\s+/.test(value)));
+  } = useInput<HTMLInputElement>(value => !(value.length < 6 || /\s+/.test(value)));
 
   const {
     value: email,
@@ -24,7 +24,7 @@ export default function Register() {
     valueChangeHandler: emailChangeHandler,
     valueBlurHandler: emailBlurHandler,
     reset: emailReset
-  } = useInput(value => value.length !== 0);
+  } = useInput<HTMLInputElement>(value => value.length !== 0);
 
   const {
     value: password,
@@ -32,7 +32,7 @@ export default function Register() {
     valueChangeHandler: passwordChangeHandler,
     valueBlurHandler: passwordBlurHandler,
     reset: passwordReset
-  } = useInput(value => !(value.length === 0 || !/^[A-Z][\w-]{6,}$/.test(value)));
+  } = useInput<HTMLInputElement>(value => !(value.length === 0 || !/^[A-Z][\w-]{6,}$/.test(value)));
 
   const {
     value: confirmPassword,
@@ -40,9 +40,9 @@ export default function Register() {
     valueChangeHandler: confirmPasswordChangeHandler,
     valueBlurHandler: confirmPasswordBlurHandler,
     reset: confirmPasswordReset
-  } = useInput(value => value === password);
+  } = useInput<HTMLInputElement>(value => value === password);
 
-  const {user, loading, error} = useSelector<UserRegisterState, AuthData>(state => state.authRegister);
+  const {user, loading, error} = useSelector<RegisterReducerState, UserData>(state => state.authRegister);
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const accept_input = useRef<HTMLInputElement>(null!);
@@ -56,15 +56,16 @@ export default function Register() {
   const registerSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const data = {username, email, password};
-    dispatch(registerAction(data)).then();
-    if (!error) {
-      navigate('/tasks/');
-      usernameReset();
-      emailReset();
-      passwordReset();
-      confirmPasswordReset();
-    }
-    setIsValidated(true);
+    dispatch(registerAction(data)).then(() => {
+      if (user !== null && error === null) {
+        navigate('/tasks/');
+        usernameReset();
+        emailReset();
+        passwordReset();
+        confirmPasswordReset();
+      }
+      setIsValidated(true);
+    });
   };
 
   return (
@@ -147,8 +148,9 @@ export default function Register() {
                 </Form.Group>
                 <Button variant="primary" type="submit">Sign up</Button>
               </Form>
-              {error && error.messages.keys.map((key: string) => (
-                  <Alert variant='danger'>{error.messages[key]}</Alert>))}
+              {error && Object.keys(error.messages).map((key: string) => (
+                  <Alert variant='danger' key='key'>{error.messages[key]}</Alert>
+              ))}
             </Container>
         )}
       </React.Fragment>

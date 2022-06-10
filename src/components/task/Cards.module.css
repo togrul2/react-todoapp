@@ -1,0 +1,10 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.info-alert {
+    display: block;
+    width: 30rem;
+}

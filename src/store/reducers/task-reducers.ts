@@ -1,64 +1,70 @@
 import {PayloadAction} from "@reduxjs/toolkit";
+import {TaskData, TasksData} from "../../types/task";
 
-interface TaskState {
-  tasks?: [];
-  loading?: boolean;
-  errors?: object | null;
-}
-
-export type Status = 'Pending' | 'Done' | 'Delayed' | 'Canceled';
-
-export interface Task {
-  id: string
-  title: string;
-  context: string;
-  deadline: Date;
-  created_at: Date;
-  status: Status;
-  done_at: Date;
-  author_id: string;
-}
-
-export interface TaskReducerState {
-  getTasks: {
-    tasks: Array<Task>,
-    loading: boolean,
-    error: {
-      messages: Map<string, string>,
-      status: number
-    }
-  };
-}
-
-export interface TaskData {
-  tasks: Array<Task>;
-  loading: boolean;
-  error: {
-    messages: Map<string, string>,
-    status: number
-  }
-}
-
-const initialState: TaskState = {
+const tasksInitialState: TasksData = {
   tasks: [],
   loading: false,
-  errors: null
+  error: null
 };
 
-export enum getTasksReducerChoices {
+const taskInitialState: TaskData = {
+  task: null,
+  loading: false,
+  error: null
+}
+
+export enum getTasksTypes {
   loading = 'tasks/get/loading',
   success = 'tasks/get/success',
   error = 'tasks/get/error',
 }
 
-export function getTasksReducer(state: TaskState = initialState, action: PayloadAction) {
+export enum createTaskTypes {
+  loading = 'tasks/create/loading',
+  success = 'tasks/create/success',
+  error = 'tasks/create/error',
+}
+
+export enum deleteTaskTypes {
+  loading = 'tasks/delete/loading',
+  success = 'tasks/delete/success',
+  error = 'tasks/delete/error'
+}
+
+export function getTasksReducer(state: TasksData = tasksInitialState, action: PayloadAction) {
   switch (action.type) {
-    case getTasksReducerChoices.loading:
+    case getTasksTypes.loading:
       return {...state, loading: true};
-    case getTasksReducerChoices.success:
+    case getTasksTypes.success:
       return {...state, loading: false, tasks: action.payload};
-    case getTasksReducerChoices.error:
-      return {...state, loading: false, errors: action.payload};
+    case getTasksTypes.error:
+      return {...state, loading: false, error: action.payload};
+    default:
+      return state;
+  }
+}
+
+export function createTaskReducer(state: TaskData = taskInitialState, action: PayloadAction) {
+  switch (action.type) {
+    case createTaskTypes.loading:
+      return {...state, loading: true};
+    case createTaskTypes.success:
+      return {...state, loading: false, task: action.payload};
+    case createTaskTypes.error:
+      return {...state, loading: false, task: action.payload};
+    default:
+      return state;
+  }
+}
+
+export function deleteTaskReducer(state = {deleted: false, loading: false, error: null}, action: PayloadAction) {
+  switch (action.type) {
+    case deleteTaskTypes.loading:
+      return {...state, loading: true};
+    case deleteTaskTypes.success:
+      return {...state, loading: false, deleted: true};
+    case deleteTaskTypes.error:
+      return {...state, loading: false, error: action.payload};
     default:
       return state;
   }

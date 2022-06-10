@@ -1,7 +1,7 @@
 import {combineReducers, configureStore} from "@reduxjs/toolkit";
 import thunk from "redux-thunk";
 import {loginReducer, registerReducer} from "./reducers/auth-reducers";
-import {getTasksReducer} from "./reducers/task-reducers";
+import {createTaskReducer, deleteTaskReducer, getTasksReducer} from "./reducers/task-reducers";
 
 let userDataFromStorage = localStorage.getItem('user');
 const user = (userDataFromStorage !== null) ? JSON.parse(userDataFromStorage) : null;
@@ -13,7 +13,9 @@ const store = configureStore({
   reducer: combineReducers({
     authLogin: loginReducer,
     authRegister: registerReducer,
-    getTasks: getTasksReducer
+    getTasks: getTasksReducer,
+    createTask: createTaskReducer,
+    deleteTask: deleteTaskReducer
   }),
   middleware: getDefaultMiddleware => getDefaultMiddleware().concat(thunk)
 });

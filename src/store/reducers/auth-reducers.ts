@@ -1,51 +1,7 @@
-interface UserState {
-  user?: object | null,
-  loading?: boolean,
-  error?: object | null
-}
+import {PayloadAction} from "@reduxjs/toolkit";
+import {UserData, UserState} from "../../types/auth";
 
-interface Action {
-  type: string;
-  payload: any;
-}
-
-export interface UserLoginState {
-  authLogin: {
-    user: {
-      access: string,
-      refresh: string,
-      username: string,
-      email: string
-    } | null,
-    loading: boolean,
-    error: {
-      messages: any,
-      status: number
-    }
-  }
-}
-
-export interface UserRegisterState {
-  authRegister: {
-    user: object,
-    loading: boolean,
-    error: {
-      messages: any,
-      status: number
-    }
-  }
-}
-
-export interface AuthData {
-  user: object | null;
-  loading: boolean;
-  error: {
-    messages: any,
-    status: number
-  } | null;
-}
-
-export const initialState: AuthData = {
+export const initialState: UserData = {
   user: null,
   loading: false,
   error: null
@@ -64,7 +20,7 @@ export enum registerReducerType {
   error = 'auth/register/error'
 }
 
-export function loginReducer(state: UserState = initialState, action: Action) {
+export function loginReducer(state: UserState = initialState, action: PayloadAction) {
   switch (action.type) {
     case loginReducerType.loading:
       return {...state, loading: true};
@@ -79,7 +35,7 @@ export function loginReducer(state: UserState = initialState, action: Action) {
   }
 }
 
-export function registerReducer(state: UserState = initialState, action: Action) {
+export function registerReducer(state: UserState = initialState, action: PayloadAction) {
   switch (action.type) {
     case registerReducerType.loading:
       return {...state, loading: true};
